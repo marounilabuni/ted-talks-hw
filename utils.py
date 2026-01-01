@@ -1,4 +1,4 @@
-import pandas as pd
+#import pandas as pd
 import json
 import pickle
 import os
@@ -13,7 +13,7 @@ from pinecone import ServerlessSpec
 
 
 def row_to_chunks(
-    row: pd.Series,
+    row,
     chunk_size: int = 1024,        # approx tokens
     overlap: int = 150            # approx tokens (≤ 30%)
 ) -> List[Dict]:
@@ -58,7 +58,7 @@ def row_to_chunks(
     return chunks
 
 
-def get_all_chunks(df: pd.DataFrame):
+def get_all_chunks(df):
     all_chunks = []
     chunks_counts_pre_doc = []
     for _, row in df.iterrows():
@@ -104,10 +104,11 @@ def search_similar(
     k: int = 5
 ):
     
-    q_emb = model.embed_documents([query])#.astype("float32")    
+    q_emb = model.embed_documents([query])#.astype("float32")
+    
     
     res = embeddings_db.query(
-        vector=q_emb.tolist(),
+        vector=q_emb,#.tolist(),
         top_k=k,
         include_metadata=True
     )
@@ -137,6 +138,7 @@ def build_pinecone_index(pc, index_name: str, df):
     texts = [c["chunk_text"] for c in all_chunks]
     embeddings, model = embed_texts(texts)
     vectors = []
+    print(f"len(embeddings): {len(embeddings)}")
     for i in range(len(embeddings)):
         vector = (
             f"chunk-{i}",

@@ -1,8 +1,5 @@
-import pandas as pd
-import json
-import pickle
+#import pandas as pd
 import os
-from tqdm import tqdm
 from langchain_openai import OpenAIEmbeddings
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import PromptTemplate
@@ -35,11 +32,17 @@ load_dotenv()
 
 
 # load the data
-df = pd.read_csv("ted_talks_en.csv")
+#import pandas as pd
+#df = pd.read_csv("ted_talks_en.csv")
+df = None
 embeddings_db = init_pinecone(df)
 embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
 
-llm = ChatOpenAI(model="gpt-4o-mini")
+llm = ChatOpenAI(
+    model="RPRTHPB-gpt-5-mini",
+    api_key=os.environ["LLMOD_API_KEY"],
+    base_url="https://api.llmod.ai",
+)
 
 # to enforce the output format (no extra text, only the required format)
 class FinalResponse(BaseModel):
@@ -51,7 +54,7 @@ class FinalResponse(BaseModel):
 structured_llm = llm.with_structured_output(FinalResponse)
 
 
-def run_pipeline(question: str, df: pd.DataFrame):
+def run_pipeline(question: str, df):
     similar_records = search_similar(question, embeddings_model, embeddings_db, k = 20)
     
     returned_chunks = [c for i, c in similar_records]
