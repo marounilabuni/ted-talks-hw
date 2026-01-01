@@ -49,7 +49,6 @@ llm = ChatOpenAI(
     base_url="https://api.llmod.ai",
 )
 
-
 # to enforce the output format (no extra text, only the required format)
 class FinalResponse(BaseModel):
     final_response: str = Field(description="""
@@ -65,10 +64,11 @@ def run_pipeline(question: str, df):
     
     returned_chunks = [c for i, c in similar_records]
     
+    
     textual_context = ""
     aggrigated_chunks = {}
     for i in range(len(returned_chunks)):
-        #returned_chunks[i]['score'] = similar_records[i][1]
+        returned_chunks[i]['score'] = similar_records[i][0]
         if returned_chunks[i]['talk_id'] not in aggrigated_chunks:
             aggrigated_chunks[returned_chunks[i]['talk_id']] = []
         aggrigated_chunks[returned_chunks[i]['talk_id']].append(returned_chunks[i])
@@ -88,6 +88,16 @@ def run_pipeline(question: str, df):
         textual_context += f"\nRelative context:"
         for chunk in chunks:
             textual_context += f"\n\t{chunk['chunk_text']}"
+    
+    
+    for i in range(len(returned_chunks)):
+        new_dict = {
+            'score': similar_records[i][0],
+            'talk_id': returned_chunks[i]['talk_id'],
+            'title': returned_chunks[i]['title'],
+            'chunk': returned_chunks[i]['chunk_text']
+        }
+        returned_chunks[i] = new_dict
         
         
     prompt = user_prompt_template.format(textual_context=textual_context, question=question)
@@ -141,6 +151,7 @@ def prompt():
         return jsonify(resp)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 if __name__ == "__main__":
     app.run(debug=True)
