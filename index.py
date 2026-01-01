@@ -36,13 +36,19 @@ load_dotenv()
 #df = pd.read_csv("ted_talks_en.csv")
 df = None
 embeddings_db = init_pinecone(df)
-embeddings_model = OpenAIEmbeddings(model="text-embedding-3-small")
+embeddings_model = OpenAIEmbeddings(
+    #model="text-embedding-3-small",
+    model="RPRTHPB-text-embedding-3-small",
+    api_key=os.environ["LLMOD_API_KEY"],
+    base_url="https://api.llmod.ai",
+    )
 
 llm = ChatOpenAI(
     model="RPRTHPB-gpt-5-mini",
     api_key=os.environ["LLMOD_API_KEY"],
     base_url="https://api.llmod.ai",
 )
+
 
 # to enforce the output format (no extra text, only the required format)
 class FinalResponse(BaseModel):
