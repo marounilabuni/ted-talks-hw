@@ -93,7 +93,7 @@ def run_pipeline(question: str, df):
     for i in range(len(returned_chunks)):
         new_dict = {
             'score': similar_records[i][0],
-            'talk_id': returned_chunks[i]['talk_id'],
+            'talk_id': int(returned_chunks[i]['talk_id']),
             'title': returned_chunks[i]['title'],
             'chunk': returned_chunks[i]['chunk_text']
         }
