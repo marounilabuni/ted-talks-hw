@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import json
 import pickle
 import os
@@ -105,9 +104,7 @@ def search_similar(
     k: int = 5
 ):
     
-    q_emb = model.embed_documents([query])#.astype("float32")
-    q_emb = np.array(q_emb, dtype=np.float32)
-    
+    q_emb = model.embed_documents([query])#.astype("float32")    
     
     res = embeddings_db.query(
         vector=q_emb.tolist(),
