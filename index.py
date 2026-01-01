@@ -142,9 +142,5 @@ def prompt():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-@app.route("/")
-def prompt():
-    return "hello"
 if __name__ == "__main__":
     app.run(debug=True)
